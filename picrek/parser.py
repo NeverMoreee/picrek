@@ -1,9 +1,10 @@
 from lxml import etree
 from pic import *
 
+
 xmldoc = '<?xml version="1.0" encoding="UTF-8"?>'
 
-def gp_parser(xml):
+def gel(xml):
     xml = xml.replace(xmldoc, '')
     par = etree.XML(xml)
     posts = par.xpath('//post')
@@ -32,7 +33,7 @@ def gp_parser(xml):
         pics.append(GPic(**info))
     return pics
 
-def yp_parser(xml):
+def yan(xml):
     xml = xml.replace(xmldoc, '')
     par = etree.XML(xml)
     posts = par.xpath('//post')
