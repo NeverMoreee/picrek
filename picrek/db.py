@@ -1,4 +1,7 @@
 import pymysql as mdb
+import log
+
+logger = log.get_logger('db')
 
 
 class Mysql(object):
@@ -8,7 +11,9 @@ class Mysql(object):
                 host='127.0.0.1', port='3366', user='root', passwd='yi')
             self.cursor = self.connect.cursor()
         except mdb.Error as e:
-            print('Error %d: %s' % (e.args[0], e.args[1]))
+            logger.error('Error %d: %s' % (e.args[0], e.args[1]))
+        else:
+            logger.info('database created')
 
     def crate(self):
         sql_create = """CREATE TABLE geltest(pid INT PRIMARY KEY,
@@ -32,10 +37,12 @@ class Mysql(object):
         except mdb.Error as e:
             if self.connect:
                 self.connect.rollback()
-            print('Error %d: %s' % (e.args[0], e.args[1]))
+            logger.error('Error %d: %s' % (e.args[0], e.args[1]))
 
     def insert(self, pics):
+        inserted = ''
         for pic in pics:
+            inserted += str(pic.pid)
             sql_insert = """INSERT INTO geltest(pid, rating, score, tags
                          file_url, file_height, file_width,
                          sample_url, sample_height, sample_width,
@@ -45,15 +52,23 @@ class Mysql(object):
                                '%s', '%d', '%d'
                                '%s', '%d', '%d')
                          """ % (pic.pid, pic.rating, pic.score, pic.tags,
-                                pic.file['file_url'], pic.file['file_height'], pic.file['file_width'],
-                                pic.sample['sample_url'], pic.sample['sample_height'], pic.sample['sample_width'],
-                                pic.preview['preview_url'], pic.preview['preview_height'], pic.preview['preview_width'])
+                                pic.file['file_url'],
+                                pic.file['file_height'],
+                                pic.file['file_width'],
+                                pic.sample['sample_url'],
+                                pic.sample['sample_height'],
+                                pic.sample['sample_width'],
+                                pic.preview['preview_url'],
+                                pic.preview['preview_height'],
+                                pic.preview['preview_width'])
             try:
                 self.cursor.execute(sql_insert)
                 self.connect.commit()
             except mdb.Error as e:
-                print('Error %d: %s' % (e.args[0], e.args[1]))
+                logger.error('Error %d: %s' % (e.args[0], e.args[1]))
                 self.connect.rollback()
+            else:
+                logger.info('pic inserted' + inserted)
 
     def select(self):
         sql_select = """SELECT * FROM geltest"""
@@ -61,6 +76,6 @@ class Mysql(object):
             self.cursor.execute(sql_select)
             rows = self.cursor.fetchall()
         except mdb.Error as e:
-            print('Error %d: %s' % (e.args[0], e.args[1]))
+            logger.error('Error %d: %s' % (e.args[0], e.args[1]))
         for row in rows:
-            print(row)
+            logger.error(row)
