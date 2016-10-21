@@ -1,8 +1,9 @@
 class Pic(object):
     def __init__(self, **kwarg):
         self.pid = kwarg['pid']
-        self.tags = kwarg['tags']
         self.rating = kwarg['rating']
+        self.score = kwarg['score']
+        self.tags = kwarg['tags']
         self.file = kwarg['file']
         self.sample = kwarg['sample']
         self.preview = kwarg['preview']
