@@ -17,48 +17,42 @@ class Mysql(object):
 
     def crate(self):
         sql_create = """CREATE TABLE gel(pid INT PRIMARY KEY,
-                                             rating CHAR(1),
-                                             score SMALLINT UNSIGNED,
-                                             tags TEXT,
-                                             file_url TEXT,
-                                             file_height SMALLINT UNSIGNED,
-                                             file_width SMALLINT UNSIGNED,
-                                             sample_url TEXT,
-                                             sample_height SMALLINT UNSIGNED,
-                                             sample_width SMALLINT UNSIGNED,
-                                             preview_url TEXT,
-                                             preview_height SMALLINT UNSIGNED,
-                                             preview_width SMALLINT UNSIGNED)
-                                             """
-        self.cursor.execute('USE geltest')
-        self.cursor.execute('DROP TABLE IF EXISTS gel')
-        self.cursor.execute(sql_create)
-        self.connect.commit()
-
-        # try:
-        #     self.cursor.execute('DROP TABLE IF EXISTS geltest')
-        #     self.cursor.execute(sql_create)
-        #     self.connect.commit()
-        # except mdb.Error as e:
-        #     if self.connect:
-        #         self.connect.rollback()
-        #     logger.error(str(e))
-        # else:
-        #     logger.info('database created')
+                                         rating CHAR(1),
+                                         score SMALLINT UNSIGNED,
+                                         tags TEXT,
+                                         file_url TEXT,
+                                         file_height SMALLINT UNSIGNED,
+                                         file_width SMALLINT UNSIGNED,
+                                         sample_url TEXT,
+                                         sample_height SMALLINT UNSIGNED,
+                                         sample_width SMALLINT UNSIGNED,
+                                         preview_url TEXT,
+                                         preview_height SMALLINT UNSIGNED,
+                                         preview_width SMALLINT UNSIGNED)
+                                         """
+        try:
+            self.cursor.execute('USE geltest')
+            self.cursor.execute('DROP TABLE IF EXISTS gel')
+            self.cursor.execute(sql_create)
+            self.connect.commit()
+        except mdb.Error as e:
+            logger.error(str(e))
+        else:
+            logger.info('database created')
 
     def insert(self, pics):
         inserted = ''
         try:
             for pic in pics:
-                inserted += str(pic.pid)
+                inserted += (str(pic.pid) + ', ')
                 sql_insert = """INSERT INTO gel(pid, rating, score, tags,
                            file_url, file_height, file_width,
                            sample_url, sample_height, sample_width,
                            preview_url, preview_height, preview_width)
-                           Value(%d, %s, %d, %s,
-                                 %s, %d, %d,
-                                 %s, %d, %d,
-                                 %s, %d, %d)
+                           VALUES(%d, "%s", %d, "%s",
+                                 "%s", %d, %d,
+                                 "%s", %d, %d,
+                                 "%s", %d, %d)
                            """ % (int(pic.pid), pic.rating,
                                   int(pic.score), pic.tags,
                                   pic.file['file_url'],
@@ -77,7 +71,7 @@ class Mysql(object):
             if self.connect:
                 self.connect.rollback()
         else:
-            logger.info('pic inserted' + inserted)
+            logger.info('pic inserted:' + inserted)
 
     def select(self):
         sql_select = """SELECT * FROM geltest"""
