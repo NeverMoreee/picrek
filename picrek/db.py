@@ -24,19 +24,22 @@ class Mysql(object):
         else:
             logger.info('entered database picrek')
 
-    def create(self, tb_name):
-        if(tb_name == 'gelbooru'):
-            self.gel_crate()
-        if(tb_name == 'yandere'):
-            self.yan_crate()
-        raise Exception('tb_name err, cant create table')
+    def select(self):
+        sql_select = """SELECT * FROM geltest"""
+        try:
+            self.cursor.execute(sql_select)
+            rows = self.cursor.fetchall()
+        except mdb.Error as e:
+            logger.error(str(e))
+        for row in rows:
+            logger.error(row)
 
     def gel_insert(self, pics):
         inserted = ''
         try:
             for pic in pics:
                 inserted += (str(pic.pid) + ', ')
-                sql_insert = """INSERT INTO gel(pid, rating, score, tags,
+                sql_insert = """INSERT INTO gelbooru(pid, rating, score, tags,
                            file_url, file_height, file_width,
                            sample_url, sample_height, sample_width,
                            preview_url, preview_height, preview_width)
@@ -62,17 +65,47 @@ class Mysql(object):
             if self.connect:
                 self.connect.rollback()
         else:
-            logger.info('pic inserted:' + inserted)
+            logger.info('gelbooru inserted:' + inserted)
 
-    def select(self):
-        sql_select = """SELECT * FROM geltest"""
+    def yan_insert(self, pics):
+        inserted = ''
         try:
-            self.cursor.execute(sql_select)
-            rows = self.cursor.fetchall()
+            for pic in pics:
+                inserted += (str(pic.pid) + ', ')
+                sql_insert = """INSERT INTO yandere(pid, rating, score, tags,
+                           file_url, file_height, file_width,
+                           sample_url, sample_height, sample_width,
+                           preview_url, preview_height, preview_width,
+                           jpeg_url, jpeg_height, jpeg_width)
+                           VALUES(%d, "%s", %d, "%s",
+                                 "%s", %d, %d,
+                                 "%s", %d, %d,
+                                 "%s", %d, %d,
+                                 "%s", %d, %d)
+                           """ % (int(pic.pid), pic.rating,
+                                  int(pic.score), pic.tags,
+                                  pic.file['file_url'],
+                                  int(pic.file['file_height']),
+                                  int(pic.file['file_width']),
+                                  pic.sample['sample_url'],
+                                  int(pic.sample['sample_height']),
+                                  int(pic.sample['sample_width']),
+                                  pic.preview['preview_url'],
+                                  int(pic.preview['preview_height']),
+                                  int(pic.preview['preview_width']),
+                                  pic.jpeg['jpeg_url'],
+                                  int(pic.jpeg['jpeg_height']),
+                                  int(pic.jpeg['jpeg_width'])
+                                  )
+                self.cursor.execute(sql_insert)
+                self.connect.commit()
         except mdb.Error as e:
-            logger.error(str(e))
-        for row in rows:
-            logger.error(row)
+            logger.error(e.args[0])
+            logger.error(e.args[1])
+            if self.connect:
+                self.connect.rollback()
+        else:
+            logger.info('yandere inserted:' + inserted)
 
     def gel_crate(self):
         sql_create = """CREATE TABLE IF NOT EXISTS gelbooru(
@@ -88,7 +121,8 @@ class Mysql(object):
         sample_width SMALLINT UNSIGNED,
         preview_url TINYTEXT,
         preview_height SMALLINT UNSIGNED,
-        preview_width SMALLINT UNSIGNED)
+        preview_width SMALLINT UNSIGNED
+        )
         """
         try:
             self.cursor.execute(sql_create)
@@ -115,8 +149,7 @@ class Mysql(object):
         preview_width SMALLINT UNSIGNED,
         jpeg_url TINYTEXT,
         jpeg_height SMALLINT UNSIGNED,
-        jpeg_width SMALLINT UNSIGNED,
-
+        jpeg_width SMALLINT UNSIGNED
         )
         """
         try:

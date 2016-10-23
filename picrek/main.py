@@ -12,12 +12,12 @@ def main():
     logger.info('picrek started')
     logger.info('--------------')
     mdb = db.Mysql()
-    mdb.crate()
+    mdb.yan_crate()
     while True:
         try:
-            yan_data = getpic.yan(page=1, limit=100)
+            yan_data = getpic.yan(page=1, limit=1)
             pics = parser.yan(yan_data)
-            # mdb.insert(pics)
+            mdb.yan_insert(pics)
         except Exception as e:
             logger.info(str(e))
 
