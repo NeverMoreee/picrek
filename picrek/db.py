@@ -6,6 +6,7 @@ logger = log.get_logger('db')
 
 class Mysql(object):
     def __init__(self):
+        # connect to Mysql
         try:
             self.connect = mdb.connect(
                 host='127.0.0.1', port=3306, user='root', passwd='yi')
@@ -13,34 +14,24 @@ class Mysql(object):
         except mdb.Error as e:
             logger.error('Error %d: %s' % (e.args[0], e.args[1]))
         else:
-            logger.info('database connected')
-
-    def crate(self):
-        sql_create = """CREATE TABLE gel(pid INT PRIMARY KEY,
-                                         rating CHAR(1),
-                                         score SMALLINT UNSIGNED,
-                                         tags TEXT,
-                                         file_url TEXT,
-                                         file_height SMALLINT UNSIGNED,
-                                         file_width SMALLINT UNSIGNED,
-                                         sample_url TEXT,
-                                         sample_height SMALLINT UNSIGNED,
-                                         sample_width SMALLINT UNSIGNED,
-                                         preview_url TEXT,
-                                         preview_height SMALLINT UNSIGNED,
-                                         preview_width SMALLINT UNSIGNED)
-                                         """
+            logger.info('Mysql connected')
+        # create picrek database
         try:
-            self.cursor.execute('USE geltest')
-            self.cursor.execute('DROP TABLE IF EXISTS gel')
-            self.cursor.execute(sql_create)
-            self.connect.commit()
-        except mdb.Error as e:
-            logger.error(str(e))
+            self.cursor.execute('CREATE DATABASE IF NOT EXISTS picrek')
+            self.cursor.execute('USE picrek')
+        except mdb.error as e:
+            logger.info(str(e))
         else:
-            logger.info('database created')
+            logger.info('entered database picrek')
 
-    def insert(self, pics):
+    def create(self, tb_name):
+        if(tb_name == 'gelbooru'):
+            self.gel_crate()
+        if(tb_name == 'yandere'):
+            self.yan_crate()
+        raise Exception('tb_name err, cant create table')
+
+    def gel_insert(self, pics):
         inserted = ''
         try:
             for pic in pics:
@@ -82,3 +73,56 @@ class Mysql(object):
             logger.error(str(e))
         for row in rows:
             logger.error(row)
+
+    def gel_crate(self):
+        sql_create = """CREATE TABLE IF NOT EXISTS gelbooru(
+        pid INT PRIMARY KEY,
+        rating CHAR(1),
+        score SMALLINT UNSIGNED,
+        tags TEXT,
+        file_url TINYTEXT,
+        file_height SMALLINT UNSIGNED,
+        file_width SMALLINT UNSIGNED,
+        sample_url TINYTEXT,
+        sample_height SMALLINT UNSIGNED,
+        sample_width SMALLINT UNSIGNED,
+        preview_url TINYTEXT,
+        preview_height SMALLINT UNSIGNED,
+        preview_width SMALLINT UNSIGNED)
+        """
+        try:
+            self.cursor.execute(sql_create)
+            self.connect.commit()
+        except mdb.Error as e:
+            logger.error(str(e))
+        else:
+            logger.info('table gelbooru created')
+
+    def yan_crate(self):
+        sql_create = """CREATE TABLE IF NOT EXISTS yandere(
+        pid INT PRIMARY KEY,
+        rating CHAR(1),
+        score SMALLINT UNSIGNED,
+        tags TEXT,
+        file_url TINYTEXT,
+        file_height SMALLINT UNSIGNED,
+        file_width SMALLINT UNSIGNED,
+        sample_url TINYTEXT,
+        sample_height SMALLINT UNSIGNED,
+        sample_width SMALLINT UNSIGNED,
+        preview_url TINYTEXT,
+        preview_height SMALLINT UNSIGNED,
+        preview_width SMALLINT UNSIGNED,
+        jpeg_url TINYTEXT,
+        jpeg_height SMALLINT UNSIGNED,
+        jpeg_width SMALLINT UNSIGNED,
+
+        )
+        """
+        try:
+            self.cursor.execute(sql_create)
+            self.connect.commit()
+        except mdb.Error as e:
+            logger.error(str(e))
+        else:
+            logger.info('table yandere created')

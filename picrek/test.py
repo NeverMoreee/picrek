@@ -26,3 +26,4 @@ def yan(url='https://yande.re/post.xml',
 
 
 yan(page=1, limit=100)
+
