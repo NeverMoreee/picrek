@@ -2,15 +2,17 @@ import getpic
 import db
 import parser
 import log
+import config
 
 logger = log.get_logger('main')
 
 
 def main():
 
-    logger.info('--------------')
-    logger.info('picrek started')
-    logger.info('--------------')
+    logger.info('--------------------')
+    logger.info('picrek-scrap started')
+    logger.info('--------------------')
+    data = config.init()
     mdb = db.Mysql()
     mdb.yan_crate()
     while True:

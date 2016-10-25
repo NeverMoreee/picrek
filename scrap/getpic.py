@@ -14,6 +14,8 @@ header = {
 
 def yan(url='https://yande.re/post.xml',
         limit=100, page=1, tags=None, proxy=None, time=1):
+    logger.info('getting:yandere, page: %d, limit: %d, proxy: %s' %
+                (page, limit, proxy))
     try:
         param = {'page': page, 'limit': limit, 'tags': tags}
         req = requests.get(url, proxies=proxy, params=param)
@@ -29,9 +31,11 @@ def yan(url='https://yande.re/post.xml',
         return req.text
 
 
-def gel(url='http://gelbooru.com/index.php?page=dapi&s=post&q=index',
+def gel(url='http://www.gelbooru.com/index.php?page=dapi&s=post&q=index',
         limit=100, page=1, tags=None, proxy=None, time=1):
                     # be careful about pid, pid = page
+    logger.info('getting:yandere, page: %d, limit: %d, proxy: %s' %
+                (page, limit, proxy))
     try:
         param = {'pid': page, 'limit': limit, 'tags': tags}
         req = requests.get(url, proxies=proxy, params=param)

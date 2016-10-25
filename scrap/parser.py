@@ -11,6 +11,7 @@ def gel(xml):
     try:
         xml = xml.replace(xmldoc, '')
         par = etree.XML(xml)
+        count = par.xpath('@count')
         posts = par.xpath('//post')
         pics = []
         for post in posts:
@@ -37,13 +38,14 @@ def gel(xml):
             pics.append(GPic(**info))
     except Exception as e:
         logger.error(str(e))
-    return pics
+    return pics, count
 
 
 def yan(xml):
     try:
         xml = xml.replace(xmldoc, '')
         par = etree.XML(xml)
+        count = par.xpath('@count')
         posts = par.xpath('//post')
         pics = []
         for post in posts:
@@ -75,6 +77,6 @@ def yan(xml):
             pics.append(YPic(**info))
     except Exception as e:
         logger.error(str(e))
-    return pics
+    return pics, count
 
 
