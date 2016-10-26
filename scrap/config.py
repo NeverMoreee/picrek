@@ -24,6 +24,7 @@ def init():
                 data = json.load(f)
     except Exception as e:
         logger.error(str(e))
+        return None
     else:
         logger.info('config init')
         return data
