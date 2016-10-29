@@ -9,7 +9,8 @@ class Mysql(object):
         # connect to Mysql
         try:
             self.connect = mdb.connect(
-                host='127.0.0.1', port=3306, user='root', passwd='yi')
+                host='127.0.0.1', port=3306, user='root', passwd='yi',
+                charset='utf8')
             self.cursor = self.connect.cursor()
         except mdb.Error as e:
             logger.error('Error %d: %s' % (e.args[0], e.args[1]))
@@ -35,7 +36,6 @@ class Mysql(object):
             logger.error(row)
 
     def gel_insert(self, pics):
-        inserted = ''
         for pic in pics:
             sql_insert = """INSERT INTO gelbooru(pid, rating, score, tags,
                        file_url, file_height, file_width,
@@ -59,14 +59,12 @@ class Mysql(object):
             try:
                 self.cursor.execute(sql_insert)
             except mdb.Error as e:
+                logger.error('pic:' + pic['pid'])
                 logger.error(str(e))
-            else:
-                inserted += (str(pic.pid) + ', ')
+                continue
         self.connect.commit()
-        logger.info('gelbooru inserted' + inserted)
 
     def yan_insert(self, pics):
-        inserted = ''
         for pic in pics:
             sql_insert = """INSERT INTO yandere(pid, rating, score, tags,
                        file_url, file_height, file_width,
@@ -96,11 +94,10 @@ class Mysql(object):
             try:
                 self.cursor.execute(sql_insert)
             except mdb.Error as e:
+                logger.error('pic:' + pic.pid)
                 logger.error(str(e))
-            else:
-                inserted += (str(pic.pid) + ', ')
+                continue
         self.connect.commit()
-        logger.info('yandere inserted:' + inserted)
 
     def gel_create(self):
         sql_create = """CREATE TABLE IF NOT EXISTS gelbooru(
@@ -117,7 +114,7 @@ class Mysql(object):
         preview_url TEXT,
         preview_height SMALLINT UNSIGNED,
         preview_width SMALLINT UNSIGNED
-        )
+        )default character set utf8
         """
         try:
             self.cursor.execute(sql_create)
@@ -145,7 +142,7 @@ class Mysql(object):
         jpeg_url TEXT,
         jpeg_height SMALLINT UNSIGNED,
         jpeg_width SMALLINT UNSIGNED
-        )
+        )default character set utf8
         """
         try:
             self.cursor.execute(sql_create)
@@ -155,5 +152,10 @@ class Mysql(object):
         else:
             logger.info('table yandere created')
 
-    def clear():
-        pass
+    def clear(self):
+        try:
+            self.cursor.execute('DROP DATABASE IF EXSITS picrek')
+        except mdb.Error as e:
+            logger.error(str(e))
+        else:
+            logger.info('database cleared')

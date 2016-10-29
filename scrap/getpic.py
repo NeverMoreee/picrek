@@ -1,6 +1,8 @@
 import requests
 import log
 import time
+from err import ConnectException
+
 
 logger = log.get_logger('getpic')
 
@@ -25,10 +27,10 @@ def yan(url='https://yande.re/post.xml',
         ctime = btime - ftime
     except Exception as e:
         logger.error(str(e))
-        if(time <= 3):
+        if(atm_time <= 3):
             yan(page=page, limit=limit, atm_time=atm_time + 1)
         else:
-            raise Exception('yandere:after %d attempt, timeout' % time)
+            raise ConnectException('yandere:after %d attempt, timeout' % time)
     else:
         logger.info('yandere: time:%0.2f, status_code:%d, page:%d, limit:%d' %
                     (ctime, req.status_code, page, limit))
@@ -48,10 +50,10 @@ def gel(url='http://www.gelbooru.com/index.php?page=dapi&s=post&q=index',
         ctime = btime - ftime
     except Exception as e:
         logger.error(str(e))
-        if(time <= 3):
+        if(atm_time <= 3):
             gel(page=page, limit=limit, atm_time=atm_time + 1, proxy=proxy)
         else:
-            raise Exception('gelbooru:after %d attempt, timeout' % time)
+            raise ConnectException('gelbooru:after %d attempt, timeout' % time)
     else:
         logger.info('gelbooru: time:%0.2f, status_code:%d, page:%d, limit:%d' %
                     (ctime, req.status_code, page, limit))

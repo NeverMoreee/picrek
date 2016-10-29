@@ -1,6 +1,7 @@
 from lxml import etree
 from pic import *
 import log
+from err import ParserException
 
 logger = log.get_logger('parser')
 
@@ -37,7 +38,7 @@ def gel(xml):
             pics.append(GPic(**info))
     except Exception as e:
         logger.error(str(e))
-        return None
+        raise ParserException
     else:
         return pics
 
@@ -88,6 +89,6 @@ def count(xml):
         par = etree.XML(xml)
     except Exception as e:
         logger.error(str(e))
-        return None
+        raise ParserException
     else:
         return int(par.xpath('@count')[0])
