@@ -1,8 +1,8 @@
 import json
 import os
-import log
+from .log import get_logger
 
-logger = log.get_logger('config')
+logger = get_logger('config')
 
 
 class Config(object):

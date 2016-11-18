@@ -1,10 +1,13 @@
 import peewee as pw
+from .log import get_logger
+
+logger = get_logger('database')
 
 db = pw.MySQLDatabase('picrek', user='root', passwd='yi')
 
 
-class Pic(pw.Model):
-    pid = pw.IntegerField()
+class Yandere(pw.Model):
+    pid = pw.IntegerField(primary_key=True)
     rating = pw.CharField()
     score = pw.IntegerField()
     tags = pw.CharField()
@@ -25,28 +28,33 @@ class Pic(pw.Model):
         database = db
 
 
-class Mysqldb(object):
-    def __init__(self):
-        db.connect()
+def init():
+    db.connect()
+    # try:
+    #     db.create_table(Yandere)
+    # except Exception as e:
+    #     logger.error(str(e))
 
-    @staticmethod
-    def insert_yan(pics):
-        for p in pics:
-            pic = Pic(pid=int(p.pid),
-                      rating=p.rating,
+
+def insert_yan(pics):
+    for p in pics:
+        pic = Yandere(pid=int(p.pid),
+                      rating=str(p.rating),
                       score=int(p.score),
-                      tags=p.tags,
-                      file_url=p.file_url,
+                      tags=str(p.tags),
+                      file_url=str(p.file_url),
                       file_height=int(p.file_height),
                       file_width=int(p.file_width),
-                      sample_url=p.sample_url,
+                      sample_url=str(p.sample_url),
                       sample_height=int(p.sample_height),
                       sample_width=int(p.sample_width),
-                      preview_url=p.preview_url,
+                      preview_url=str(p.preview_url),
                       preview_height=int(p.preview_height),
                       preview_width=int(p.preview_width),
-                      jpeg_url=p.jpeg_url,
+                      jpeg_url=str(p.jpeg_url),
                       jpeg_height=int(p.jpeg_height),
                       jpeg_width=int(p.jpeg_width)
                       )
-            pic.save()
+        pic.save()
+
+
